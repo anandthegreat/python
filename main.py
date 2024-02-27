@@ -33,6 +33,7 @@ class Employee:
     def set_hike_percent(cls,percent):
         cls.hike_percent = percent
 
+    # Does not depend on class or instance variables
     @staticmethod
     def is_weekend(day):
         return day.weekday() == 5 or day.weekday == 6
@@ -69,4 +70,3 @@ if __name__ == '__main__':
     # Using static methods
     todays_date = datetime.date.today()
     print(Employee.is_weekend(todays_date))
-
