@@ -39,8 +39,8 @@ class Employee:
         return day.weekday() == 5 or day.weekday == 6
 
 if __name__ == '__main__':
-    s1 = Employee("Anand","Verma",125000);
-    s2 = Employee("Anshul","Gautam",110000);
+    s1 = Employee("Anand","Verma",125000)
+    s2 = Employee("Anshul","Gautam",110000)
 
     # Both will give same output
     # s1.displayName();

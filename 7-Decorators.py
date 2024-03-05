@@ -31,6 +31,7 @@ def my_func():
     time.sleep(3)
     return "Hello world"
 
+@timer
 def my_func2(a,b):
     time.sleep(2)
     return a+b
