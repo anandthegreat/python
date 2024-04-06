@@ -21,6 +21,12 @@ if __name__ == '__main__':
     named_heroes = [(name,hero) for name, hero in zip(names,heros)]
     print(named_heroes) #[('Bruce', 'Batman'), ('Clark', 'Superman'),....
 
+
+    sentence = 'Those Woofers Im shit scared of that sHit Scared OF A SHIT Scared oF B'
+    cnt_lower = sum(1 for c in sentence if c.islower())
+    cnt_upper = sum(1 for c in sentence if c.isupper())
+    print('Count of lowercase: ',cnt_lower,', Count of uppercase: ',cnt_upper)
+
     # 2. Dictionary comprehension
 
     # create dictionry of name as key hero as value

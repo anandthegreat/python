@@ -9,11 +9,15 @@ Gives us an iterable dictionary object
 """
 
 def concatenate(*args,**kwargs):
+    print(kwargs)
     res = ""
     for word in kwargs.values():
         res += word
         res += " "
     return res
+
+def func(*args):
+    print(args)
 
 if __name__ == "__main__":
     # Jai Ho Bajrangbali
@@ -26,10 +30,10 @@ if __name__ == "__main__":
 
     # Ram Radha Shiv Krishna
     print(*naam_list)
-
+    func([1,2,3])
     # R a m R a m R a m R a m . . . .
     print(*ram_naam)
-
+    func(*ram_naam)
     val_dict1 = {"Ram": "Perfection", "Hanuman": "Bal Buddhi", "Mata": "Creator Nurterer"}
     val_dict2 = {"Shiv": "Protector", "Narayan": "Supreme"}
 

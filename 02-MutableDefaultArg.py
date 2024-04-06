@@ -20,14 +20,15 @@ def func2(key,val,a=None):
         a[key] = val
     return a
 
-print(func('a',10))
-print(func('b',20))
-print(func2('a',10))
-print(func2('b',20))
-
 def mutable_default_arg (something = {'foo':1}):
     something['foo'] += 1
     print (something)
 
-mutable_default_arg()
-mutable_default_arg()
+if __name__ == '__main__':
+    print(func('a',10))
+    print(func('b',20))
+    print(func2('a',10))
+    print(func2('b',20))
+
+    mutable_default_arg()
+    mutable_default_arg()

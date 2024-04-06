@@ -32,6 +32,8 @@ if __name__ == '__main__':
     adults = filter(filter_adults, records)
     print(*list(adults))
 
+    adults = filter(lambda x: x[1] >= 24, records)
+    print(list(adults))
 
     # 3. Reduce
     numbers = [1,2,3,4,5,6,7,8,9,10]
@@ -56,5 +58,6 @@ if __name__ == '__main__':
     print(sorted_frequency)
 
     # 2b: Using Map/Filter/Reduce
-    reduce(lambda x,y: (x[0], x[1]+y[1]) if x[0] == y[0] else () ,map(lambda word: (word, 1), words))
+    print(list(map(lambda word: (word, 1), words))[0][0])
+    print(list(reduce(lambda x,y: (x[0], x[1]+y[1]) if x[0]==y[0] else () ,list(map(lambda word: (word, 1), words)))))
 
