@@ -14,3 +14,4 @@
 *.pytest_cache*
 !*gdmlvault_localhost_encrypted*
 *debugger_helper.py*
+common-testing.py
