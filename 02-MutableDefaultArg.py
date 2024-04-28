@@ -1,3 +1,5 @@
+from testing import *
+
 '''
 Class variables and default arguments are created
 when the function is loaded, and only once. That means
