@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pandas Cheat Sheet — Data Engineer Interview</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --surface2: #1a1e28;
+    --border: #252a38;
+    --accent: #5eead4;
+    --accent2: #f472b6;
+    --accent3: #fbbf24;
+    --accent4: #818cf8;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --code-bg: #0a0c10;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    padding: 2rem;
+    min-height: 100vh;
+  }
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .header-left h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent4) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header-left p {
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 0.65rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .tag-io    { background: #0f2a2a; color: var(--accent); border: 1px solid #1a4a4a; }
+  .tag-clean { background: #2a1a2a; color: var(--accent2); border: 1px solid #4a1a4a; }
+  .tag-shape { background: #2a2010; color: var(--accent3); border: 1px solid #4a3a10; }
+  .tag-merge { background: #1a1a3a; color: var(--accent4); border: 1px solid #2a2a5a; }
+  .tag-filter{ background: #0f2a1a; color: #4ade80; border: 1px solid #1a4a2a; }
+  .tag-group { background: #2a1515; color: #fb923c; border: 1px solid #4a2a1a; }
+  .tag-str   { background: #1a2a2a; color: #67e8f9; border: 1px solid #1a4040; }
+  .tag-dt    { background: #251a30; color: #c084fc; border: 1px solid #3a1a50; }
+  .tag-type  { background: #202015; color: #d4d470; border: 1px solid #3a3a1a; }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 1.8rem 0 0.6rem;
+  }
+  .section-label span {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+  }
+  thead tr {
+    background: var(--surface);
+  }
+  th {
+    padding: 8px 14px;
+    text-align: left;
+    font-size: 0.65rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  td {
+    padding: 9px 14px;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.5;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+
+  td:first-child { width: 140px; }
+  td:nth-child(2) { width: 36%; }
+  td:nth-child(3) { }
+
+  .fn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 2px;
+  }
+  .fn-desc {
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: #93c5fd;
+  }
+  .fmt {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.73rem;
+    color: #a5b4fc;
+    background: var(--code-bg);
+    border: 1px solid #2a2a4a;
+    border-radius: 5px;
+    padding: 6px 10px;
+    display: block;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  .ex-block {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .ex {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 6px 10px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: var(--text);
+  }
+  .ex .kw  { color: #f472b6; }
+  .ex .fn2 { color: #5eead4; }
+  .ex .str { color: #86efac; }
+  .ex .num { color: #fbbf24; }
+  .ex .cm  { color: #475569; }
+  .ex .var { color: #e2e8f0; }
+  .ex .op  { color: #818cf8; }
+
+  .tip {
+    display: inline-block;
+    margin-top: 4px;
+    font-size: 0.65rem;
+    padding: 2px 7px;
+    background: #1a2a1a;
+    border: 1px solid #2a4a2a;
+    border-radius: 3px;
+    color: #4ade80;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .warn {
+    display: inline-block;
+    margin-top: 4px;
+    font-size: 0.65rem;
+    padding: 2px 7px;
+    background: #2a2010;
+    border: 1px solid #4a3810;
+    border-radius: 3px;
+    color: #fbbf24;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .footer {
+    margin-top: 2.5rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.7rem;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  @media print {
+    body { background: white; color: black; padding: 1rem; }
+    :root {
+      --bg: white; --surface: #f8f9fa; --surface2: #f1f3f5;
+      --border: #dee2e6; --accent: #0d6efd; --accent2: #d63384;
+      --accent3: #fd7e14; --accent4: #6610f2; --text: #212529;
+      --muted: #6c757d; --code-bg: #f8f9fa;
+    }
+    .header-left h1 { -webkit-text-fill-color: #0d6efd; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Pandas Cheat Sheet</h1>
+    <p>import pandas as pd &nbsp;·&nbsp; Data Engineer Interview Edition &nbsp;·&nbsp; df = pd.DataFrame(...)</p>
+  </div>
+</div>
+
+<!-- I/O & INSPECTION -->
+<div class="section-label"><span class="tag tag-io">I/O &amp; Inspection</span><span></span></div>
+<table>
+<thead><tr><th>Function</th><th>Format</th><th>Examples</th></tr></thead>
+<tbody>
+<tr>
+  <td><span class="fn">read_csv / to_csv</span><span class="fn-desc">Read/write delimited files</span></td>
+  <td><span class="fmt">pd.read_csv(path, sep=',', parse_dates=[cols], dtype={}, usecols=[])
+df.to_csv(path, index=False)</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span> <span class="op">=</span> pd.<span class="fn2">read_csv</span>(<span class="str">'orders.csv'</span>, parse_dates=[<span class="str">'order_date'</span>], dtype={<span class="str">'id'</span>: str})</div>
+    <div class="ex"><span class="var">df</span>.<span class="fn2">to_csv</span>(<span class="str">'out.csv'</span>, index=<span class="kw">False</span>)</div>
+    <span class="tip">✓ always index=False when writing</span>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">info / dtypes / describe</span><span class="fn-desc">Schema + stats snapshot</span></td>
+  <td><span class="fmt">df.info()
+df.dtypes
+df.describe(include='all')</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>.<span class="fn2">info</span>()  <span class="cm"># nulls + dtypes in one shot</span></div>
+    <div class="ex"><span class="var">df</span>.<span class="fn2">describe</span>(include=<span class="str">'all'</span>)  <span class="cm"># numeric + object cols</span></div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">head / tail / sample</span><span class="fn-desc">Quick peek</span></td>
+  <td><span class="fmt">df.head(n)
+df.sample(n, random_state=42)</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>.<span class="fn2">sample</span>(<span class="num">5</span>, random_state=<span class="num">42</span>)</div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">value_counts</span><span class="fn-desc">Frequency table</span></td>
+  <td><span class="fmt">df['col'].value_counts(dropna=False, normalize=False)</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>[<span class="str">'status'</span>].<span class="fn2">value_counts</span>(dropna=<span class="kw">False</span>)</div>
+    <div class="ex"><span class="var">df</span>[<span class="str">'status'</span>].<span class="fn2">value_counts</span>(normalize=<span class="kw">True</span>)  <span class="cm"># proportions</span></div>
+  </div></td>
+</tr>
+</tbody>
+</table>
+
+<!-- CLEANING -->
+<div class="section-label"><span class="tag tag-clean">Cleaning &amp; Nulls</span><span></span></div>
+<table>
+<thead><tr><th>Function</th><th>Format</th><th>Examples</th></tr></thead>
+<tbody>
+<tr>
+  <td><span class="fn">dropna</span><span class="fn-desc">Remove rows/cols with nulls</span></td>
+  <td><span class="fmt">df.dropna(axis=0|1, subset=[cols], how='any'|'all', thresh=n)</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>.<span class="fn2">dropna</span>()  <span class="cm"># drop any row with NaN</span></div>
+    <div class="ex"><span class="var">df</span>.<span class="fn2">dropna</span>(subset=[<span class="str">'email'</span>, <span class="str">'phone'</span>])</div>
+    <div class="ex"><span class="var">df</span>.<span class="fn2">dropna</span>(thresh=<span class="num">3</span>)  <span class="cm"># keep rows with ≥3 non-NaN</span></div>
+    <div class="ex"><span class="var">df</span>.<span class="fn2">dropna</span>(axis=<span class="num">1</span>)  <span class="cm"># drop columns instead</span></div>
+    <span class="warn">⚠ add inplace=True or reassign</span>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">fillna</span><span class="fn-desc">Fill missing values</span></td>
+  <td><span class="fmt">df.fillna(value, method='ffill'|'bfill')
+df['col'].fillna(df['col'].mean())</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>.<span class="fn2">fillna</span>(<span class="num">0</span>)  <span class="cm"># fill all NaN with 0</span></div>
+    <div class="ex"><span class="var">df</span>[<span class="str">'salary'</span>].<span class="fn2">fillna</span>(<span class="var">df</span>[<span class="str">'salary'</span>].<span class="fn2">median</span>())</div>
+    <div class="ex"><span class="var">df</span>.<span class="fn2">fillna</span>(method=<span class="str">'ffill'</span>)  <span class="cm"># forward fill (time series)</span></div>
+    <div class="ex"><span class="var">df</span>.<span class="fn2">fillna</span>({<span class="str">'city'</span>: <span class="str">'Unknown'</span>, <span class="str">'age'</span>: <span class="num">0</span>})</div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">drop_duplicates</span><span class="fn-desc">Remove duplicate rows</span></td>
+  <td><span class="fmt">df.drop_duplicates(subset=[cols], keep='first'|'last'|False)</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>.<span class="fn2">drop_duplicates</span>()  <span class="cm"># all cols match</span></div>
+    <div class="ex"><span class="var">df</span>.<span class="fn2">drop_duplicates</span>(subset=[<span class="str">'user_id'</span>], keep=<span class="str">'last'</span>)</div>
+    <div class="ex"><span class="var">df</span>.<span class="fn2">drop_duplicates</span>(subset=[<span class="str">'id'</span>], keep=<span class="kw">False</span>)  <span class="cm"># drop ALL dupes</span></div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">isna / notna</span><span class="fn-desc">Null masks</span></td>
+  <td><span class="fmt">df.isna().sum()
+df[df['col'].isna()]</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>.<span class="fn2">isna</span>().<span class="fn2">sum</span>()  <span class="cm"># null count per column</span></div>
+    <div class="ex"><span class="var">df</span>[<span class="var">df</span>[<span class="str">'revenue'</span>].<span class="fn2">isna</span>()]  <span class="cm"># filter null rows</span></div>
+    <div class="ex"><span class="var">df</span>.<span class="fn2">isna</span>().<span class="fn2">sum</span>() / <span class="fn2">len</span>(<span class="var">df</span>) <span class="op">* 100</span>  <span class="cm"># null % per col</span></div>
+  </div></td>
+</tr>
+</tbody>
+</table>
+
+<!-- SHAPING -->
+<div class="section-label"><span class="tag tag-shape">Shaping &amp; Transforming</span><span></span></div>
+<table>
+<thead><tr><th>Function</th><th>Format</th><th>Examples</th></tr></thead>
+<tbody>
+<tr>
+  <td><span class="fn">rename</span><span class="fn-desc">Rename columns/index</span></td>
+  <td><span class="fmt">df.rename(columns={'old': 'new'})
+df.reset_index().rename(columns={'index': 'name'})</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>.<span class="fn2">rename</span>(columns={<span class="str">'cust_id'</span>: <span class="str">'customer_id'</span>})</div>
+    <div class="ex"><span class="cm"># rename groupby result index to column:</span>
+<span class="var">df</span>.<span class="fn2">groupby</span>(<span class="str">'dept'</span>)[<span class="str">'sal'</span>].<span class="fn2">mean</span>().<span class="fn2">reset_index</span>().<span class="fn2">rename</span>(columns={<span class="str">'sal'</span>: <span class="str">'avg_sal'</span>})</div>
+    <div class="ex"><span class="cm"># rename all cols at once:</span>
+<span class="var">df</span>.columns <span class="op">=</span> [<span class="var">c</span>.<span class="fn2">lower</span>().<span class="fn2">replace</span>(<span class="str">' '</span>, <span class="str">'_'</span>) <span class="kw">for</span> <span class="var">c</span> <span class="kw">in</span> <span class="var">df</span>.columns]</div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">reset_index</span><span class="fn-desc">Move index → column</span></td>
+  <td><span class="fmt">df.reset_index(drop=False)
+</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">result</span> <span class="op">=</span> <span class="var">df</span>.<span class="fn2">groupby</span>(<span class="str">'city'</span>).<span class="fn2">size</span>().<span class="fn2">reset_index</span>(name=<span class="str">'count'</span>)</div>
+    <div class="ex"><span class="var">df</span>.<span class="fn2">reset_index</span>(drop=<span class="kw">True</span>)  <span class="cm"># discard old index</span></div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">sort_values</span><span class="fn-desc">Sort rows by columns</span></td>
+  <td><span class="fmt">df.sort_values(by=[cols], ascending=True|False, na_position='last')</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>.<span class="fn2">sort_values</span>(<span class="str">'salary'</span>, ascending=<span class="kw">False</span>)</div>
+    <div class="ex"><span class="var">df</span>.<span class="fn2">sort_values</span>([<span class="str">'dept'</span>, <span class="str">'salary'</span>], ascending=[<span class="kw">True</span>, <span class="kw">False</span>])</div>
+    <div class="ex"><span class="var">df</span>.<span class="fn2">sort_values</span>(<span class="str">'score'</span>, na_position=<span class="str">'last'</span>)</div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">drop</span><span class="fn-desc">Drop rows or columns</span></td>
+  <td><span class="fmt">df.drop(columns=[cols])
+df.drop(index=[labels])</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>.<span class="fn2">drop</span>(columns=[<span class="str">'temp_col'</span>, <span class="str">'junk'</span>])</div>
+    <div class="ex"><span class="var">df</span>.<span class="fn2">drop</span>(index=<span class="var">df</span>[<span class="var">df</span>[<span class="str">'flag'</span>] <span class="op">== 1</span>].index)</div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">assign</span><span class="fn-desc">Add/overwrite columns</span></td>
+  <td><span class="fmt">df.assign(new_col=expr_or_lambda)</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>.<span class="fn2">assign</span>(tax=<span class="var">df</span>[<span class="str">'price'</span>] <span class="op">* 0.18</span>)</div>
+    <div class="ex"><span class="var">df</span>.<span class="fn2">assign</span>(full_name=<span class="kw">lambda</span> <span class="var">x</span>: <span class="var">x</span>[<span class="str">'first'</span>] <span class="op">+</span> <span class="str">' '</span> <span class="op">+</span> <span class="var">x</span>[<span class="str">'last'</span>])</div>
+    <span class="tip">✓ chainable — returns new df</span>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">apply</span><span class="fn-desc">Row/col-wise function</span></td>
+  <td><span class="fmt">df['col'].apply(func)
+df.apply(func, axis=0|1)</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>[<span class="str">'name'</span>].<span class="fn2">apply</span>(str.title)</div>
+    <div class="ex"><span class="var">df</span>[<span class="str">'score'</span>].<span class="fn2">apply</span>(<span class="kw">lambda</span> <span class="var">x</span>: <span class="str">'pass'</span> <span class="kw">if</span> <span class="var">x</span> <span class="op">>=</span> <span class="num">50</span> <span class="kw">else</span> <span class="str">'fail'</span>)</div>
+    <span class="warn">⚠ slow on large data — prefer vectorized ops</span>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">astype</span><span class="fn-desc">Cast column types</span></td>
+  <td><span class="fmt">df['col'].astype(dtype)
+df.astype({'col1': dtype, 'col2': dtype})</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>[<span class="str">'age'</span>].<span class="fn2">astype</span>(int)</div>
+    <div class="ex"><span class="var">df</span>[<span class="str">'id'</span>].<span class="fn2">astype</span>(str)</div>
+    <div class="ex"><span class="var">df</span>.<span class="fn2">astype</span>({<span class="str">'price'</span>: float, <span class="str">'qty'</span>: int})</div>
+    <div class="ex"><span class="var">df</span>[<span class="str">'cat'</span>].<span class="fn2">astype</span>(<span class="str">'category'</span>)  <span class="cm"># saves memory</span></div>
+    <span class="warn">⚠ NaNs in int col → use pd.Int64Dtype() or float first</span>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">where / np.where</span><span class="fn-desc">Conditional values</span></td>
+  <td><span class="fmt">np.where(condition, val_if_true, val_if_false)
+pd.cut / pd.qcut for binning</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>[<span class="str">'tier'</span>] <span class="op">=</span> np.<span class="fn2">where</span>(<span class="var">df</span>[<span class="str">'spend'</span>] <span class="op">></span> <span class="num">1000</span>, <span class="str">'gold'</span>, <span class="str">'silver'</span>)</div>
+    <div class="ex"><span class="var">df</span>[<span class="str">'band'</span>] <span class="op">=</span> pd.<span class="fn2">cut</span>(<span class="var">df</span>[<span class="str">'age'</span>], bins=[<span class="num">0</span>,<span class="num">18</span>,<span class="num">35</span>,<span class="num">60</span>,<span class="num">99</span>], labels=[<span class="str">'teen'</span>,<span class="str">'young'</span>,<span class="str">'mid'</span>,<span class="str">'senior'</span>])</div>
+  </div></td>
+</tr>
+</tbody>
+</table>
+
+<!-- FILTERING -->
+<div class="section-label"><span class="tag tag-filter">Filtering &amp; Selection</span><span></span></div>
+<table>
+<thead><tr><th>Function</th><th>Format</th><th>Examples</th></tr></thead>
+<tbody>
+<tr>
+  <td><span class="fn">isin</span><span class="fn-desc">Filter by value list</span></td>
+  <td><span class="fmt">df[df['col'].isin([val1, val2])]
+df[~df['col'].isin([...])]  # NOT in</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>[<span class="var">df</span>[<span class="str">'country'</span>].<span class="fn2">isin</span>([<span class="str">'IN'</span>, <span class="str">'US'</span>, <span class="str">'UK'</span>])]</div>
+    <div class="ex"><span class="var">df</span>[<span class="op">~</span><span class="var">df</span>[<span class="str">'status'</span>].<span class="fn2">isin</span>([<span class="str">'cancelled'</span>, <span class="str">'refunded'</span>])]</div>
+    <div class="ex"><span class="cm"># filter using another df's column:</span>
+<span class="var">df</span>[<span class="var">df</span>[<span class="str">'id'</span>].<span class="fn2">isin</span>(<span class="var">df2</span>[<span class="str">'id'</span>])]</div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">query</span><span class="fn-desc">SQL-like filter syntax</span></td>
+  <td><span class="fmt">df.query("col > val and col2 == 'str'")</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>.<span class="fn2">query</span>(<span class="str">"age > 25 and dept == 'eng'"</span>)</div>
+    <div class="ex"><span class="var">threshold</span> <span class="op">=</span> <span class="num">1000</span>; <span class="var">df</span>.<span class="fn2">query</span>(<span class="str">"revenue > @threshold"</span>)  <span class="cm"># use @ for vars</span></div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">loc / iloc</span><span class="fn-desc">Label / position select</span></td>
+  <td><span class="fmt">df.loc[row_label, col_label]
+df.iloc[row_int, col_int]</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>.<span class="fn2">loc</span>[<span class="var">df</span>[<span class="str">'score'</span>] <span class="op">></span> <span class="num">90</span>, [<span class="str">'name'</span>, <span class="str">'score'</span>]]</div>
+    <div class="ex"><span class="var">df</span>.<span class="fn2">iloc</span>[<span class="num">0</span>:<span class="num">5</span>, <span class="num">2</span>:<span class="num">5</span>]  <span class="cm"># first 5 rows, cols 2–4</span></div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">nlargest / nsmallest</span><span class="fn-desc">Top/bottom N rows</span></td>
+  <td><span class="fmt">df.nlargest(n, 'col')
+df.nsmallest(n, 'col')</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>.<span class="fn2">nlargest</span>(<span class="num">10</span>, <span class="str">'revenue'</span>)</div>
+    <div class="ex"><span class="var">df</span>.<span class="fn2">nlargest</span>(<span class="num">5</span>, [<span class="str">'revenue'</span>, <span class="str">'qty'</span>])</div>
+  </div></td>
+</tr>
+</tbody>
+</table>
+
+<!-- MERGING -->
+<div class="section-label"><span class="tag tag-merge">Merging &amp; Combining</span><span></span></div>
+<table>
+<thead><tr><th>Function</th><th>Format</th><th>Examples</th></tr></thead>
+<tbody>
+<tr>
+  <td><span class="fn">merge</span><span class="fn-desc">SQL-style joins</span></td>
+  <td><span class="fmt">pd.merge(left, right, on='col', how='inner'|'left'|'right'|'outer', suffixes=('_x','_y'))</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="cm"># inner join (default):</span>
+pd.<span class="fn2">merge</span>(<span class="var">orders</span>, <span class="var">customers</span>, on=<span class="str">'cust_id'</span>)</div>
+    <div class="ex"><span class="cm"># left join, different key names:</span>
+pd.<span class="fn2">merge</span>(<span class="var">df1</span>, <span class="var">df2</span>, left_on=<span class="str">'id'</span>, right_on=<span class="str">'user_id'</span>, how=<span class="str">'left'</span>)</div>
+    <div class="ex"><span class="cm"># anti-join (rows in left NOT in right):</span>
+pd.<span class="fn2">merge</span>(<span class="var">df1</span>, <span class="var">df2</span>, on=<span class="str">'id'</span>, how=<span class="str">'left'</span>, indicator=<span class="kw">True</span>).<span class="fn2">query</span>(<span class="str">"_merge == 'left_only'"</span>)</div>
+    <span class="tip">✓ indicator=True → _merge col shows 'left_only','both','right_only'</span>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">concat</span><span class="fn-desc">Stack dfs vertically or horizontally</span></td>
+  <td><span class="fmt">pd.concat([df1, df2], axis=0|1, ignore_index=True, keys=['a','b'])</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="cm"># stack rows (union):</span>
+pd.<span class="fn2">concat</span>([<span class="var">jan</span>, <span class="var">feb</span>, <span class="var">mar</span>], ignore_index=<span class="kw">True</span>)</div>
+    <div class="ex"><span class="cm"># stack columns side by side:</span>
+pd.<span class="fn2">concat</span>([<span class="var">df1</span>, <span class="var">df2</span>], axis=<span class="num">1</span>)</div>
+    <div class="ex"><span class="cm"># keep track of origin:</span>
+pd.<span class="fn2">concat</span>([<span class="var">df1</span>, <span class="var">df2</span>], keys=[<span class="str">'2024'</span>, <span class="str">'2025'</span>])</div>
+    <span class="warn">⚠ axis=0 needs same columns; mismatches → NaN</span>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">join</span><span class="fn-desc">Index-based join</span></td>
+  <td><span class="fmt">df1.join(df2, on='col', how='left'|'inner')</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df1</span>.<span class="fn2">set_index</span>(<span class="str">'id'</span>).<span class="fn2">join</span>(<span class="var">df2</span>.<span class="fn2">set_index</span>(<span class="str">'id'</span>), how=<span class="str">'inner'</span>)</div>
+  </div></td>
+</tr>
+</tbody>
+</table>
+
+<!-- GROUPBY -->
+<div class="section-label"><span class="tag tag-group">GroupBy &amp; Aggregation</span><span></span></div>
+<table>
+<thead><tr><th>Function</th><th>Format</th><th>Examples</th></tr></thead>
+<tbody>
+<tr>
+  <td><span class="fn">groupby + agg</span><span class="fn-desc">Multi-function aggregation</span></td>
+  <td><span class="fmt">df.groupby('col').agg({'col2': ['sum','mean'], 'col3': 'count'})
+df.groupby('col').agg(alias=('col2', 'sum'))</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>.<span class="fn2">groupby</span>(<span class="str">'dept'</span>)[<span class="str">'salary'</span>].<span class="fn2">agg</span>([<span class="str">'mean'</span>, <span class="str">'max'</span>, <span class="str">'count'</span>])</div>
+    <div class="ex"><span class="cm"># named aggregation (clean output):</span>
+<span class="var">df</span>.<span class="fn2">groupby</span>(<span class="str">'dept'</span>).<span class="fn2">agg</span>(
+  avg_sal=(<span class="str">'salary'</span>, <span class="str">'mean'</span>),
+  headcount=(<span class="str">'emp_id'</span>, <span class="str">'nunique'</span>)
+).<span class="fn2">reset_index</span>()</div>
+    <span class="tip">✓ named agg avoids MultiIndex columns</span>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">groupby + transform</span><span class="fn-desc">Broadcast agg back to df</span></td>
+  <td><span class="fmt">df.groupby('col')['col2'].transform('mean'|func)</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="cm"># add dept avg as new column (same row count):</span>
+<span class="var">df</span>[<span class="str">'dept_avg_sal'</span>] <span class="op">=</span> <span class="var">df</span>.<span class="fn2">groupby</span>(<span class="str">'dept'</span>)[<span class="str">'salary'</span>].<span class="fn2">transform</span>(<span class="str">'mean'</span>)</div>
+    <div class="ex"><span class="cm"># pct of group total:</span>
+<span class="var">df</span>[<span class="str">'pct'</span>] <span class="op">=</span> <span class="var">df</span>[<span class="str">'sales'</span>] <span class="op">/</span> <span class="var">df</span>.<span class="fn2">groupby</span>(<span class="str">'region'</span>)[<span class="str">'sales'</span>].<span class="fn2">transform</span>(<span class="str">'sum'</span>)</div>
+    <span class="tip">✓ key difference from agg: same shape as input</span>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">pivot_table</span><span class="fn-desc">2D cross-tab aggregation</span></td>
+  <td><span class="fmt">df.pivot_table(values, index, columns, aggfunc, fill_value)</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>.<span class="fn2">pivot_table</span>(values=<span class="str">'sales'</span>, index=<span class="str">'region'</span>, columns=<span class="str">'month'</span>, aggfunc=<span class="str">'sum'</span>, fill_value=<span class="num">0</span>)</div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">rank / cumsum</span><span class="fn-desc">Window-style calcs</span></td>
+  <td><span class="fmt">df.groupby('col')['col2'].rank(method='dense', ascending=False)
+df['col'].cumsum()</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="cm"># rank within group (dense = no gaps):</span>
+<span class="var">df</span>[<span class="str">'rank'</span>] <span class="op">=</span> <span class="var">df</span>.<span class="fn2">groupby</span>(<span class="str">'dept'</span>)[<span class="str">'salary'</span>].<span class="fn2">rank</span>(method=<span class="str">'dense'</span>, ascending=<span class="kw">False</span>)</div>
+    <div class="ex"><span class="var">df</span>[<span class="str">'running_total'</span>] <span class="op">=</span> <span class="var">df</span>.<span class="fn2">groupby</span>(<span class="str">'user'</span>)[<span class="str">'spend'</span>].<span class="fn2">cumsum</span>()</div>
+  </div></td>
+</tr>
+</tbody>
+</table>
+
+<!-- STRING -->
+<div class="section-label"><span class="tag tag-str">String Operations</span><span></span></div>
+<table>
+<thead><tr><th>Function</th><th>Format</th><th>Examples</th></tr></thead>
+<tbody>
+<tr>
+  <td><span class="fn">str.contains</span><span class="fn-desc">Regex / substring filter</span></td>
+  <td><span class="fmt">df['col'].str.contains('pattern', case=True, na=False, regex=True)</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>[<span class="var">df</span>[<span class="str">'email'</span>].str.<span class="fn2">contains</span>(<span class="str">'@gmail'</span>, na=<span class="kw">False</span>)]</div>
+    <div class="ex"><span class="var">df</span>[<span class="var">df</span>[<span class="str">'name'</span>].str.<span class="fn2">contains</span>(<span class="str">'kumar|sharma'</span>, case=<span class="kw">False</span>, na=<span class="kw">False</span>)]</div>
+    <span class="warn">⚠ always set na=False to avoid NaN propagation</span>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">str.replace / strip / split</span><span class="fn-desc">Clean text</span></td>
+  <td><span class="fmt">df['col'].str.replace('old','new', regex=True)
+df['col'].str.strip()
+df['col'].str.split(',', expand=True)</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>[<span class="str">'phone'</span>].str.<span class="fn2">replace</span>(<span class="str">r'[^0-9]'</span>, <span class="str">''</span>, regex=<span class="kw">True</span>)  <span class="cm"># digits only</span></div>
+    <div class="ex"><span class="var">df</span>[<span class="str">'city'</span>].str.<span class="fn2">strip</span>().<span class="fn2">str</span>.<span class="fn2">lower</span>()</div>
+    <div class="ex"><span class="var">df</span>[[<span class="str">'first'</span>, <span class="str">'last'</span>]] <span class="op">=</span> <span class="var">df</span>[<span class="str">'name'</span>].str.<span class="fn2">split</span>(<span class="str">' '</span>, expand=<span class="kw">True</span>)</div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">str.extract / extractall</span><span class="fn-desc">Regex capture groups</span></td>
+  <td><span class="fmt">df['col'].str.extract(r'(pattern)')</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>[<span class="str">'pin'</span>] <span class="op">=</span> <span class="var">df</span>[<span class="str">'address'</span>].str.<span class="fn2">extract</span>(<span class="str">r'(\d{6})'</span>)</div>
+    <div class="ex"><span class="var">df</span>[<span class="str">'domain'</span>] <span class="op">=</span> <span class="var">df</span>[<span class="str">'email'</span>].str.<span class="fn2">extract</span>(<span class="str">r'@(.+)'</span>)</div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">str.len / startswith / endswith</span><span class="fn-desc">Quick string checks</span></td>
+  <td><span class="fmt">df['col'].str.len()
+df['col'].str.startswith('prefix')</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>[<span class="var">df</span>[<span class="str">'code'</span>].str.<span class="fn2">startswith</span>(<span class="str">'INV'</span>)]</div>
+    <div class="ex"><span class="var">df</span>[<span class="var">df</span>[<span class="str">'name'</span>].str.<span class="fn2">len</span>() <span class="op">></span> <span class="num">50</span>]  <span class="cm"># suspiciously long names</span></div>
+  </div></td>
+</tr>
+</tbody>
+</table>
+
+<!-- DATETIME -->
+<div class="section-label"><span class="tag tag-dt">Datetime Operations</span><span></span></div>
+<table>
+<thead><tr><th>Function</th><th>Format</th><th>Examples</th></tr></thead>
+<tbody>
+<tr>
+  <td><span class="fn">to_datetime</span><span class="fn-desc">Parse strings → datetime</span></td>
+  <td><span class="fmt">pd.to_datetime(df['col'], format='%Y-%m-%d', errors='coerce')</span></td>
+  <td><div class="ex-block">
+    <div class="ex">pd.<span class="fn2">to_datetime</span>(<span class="var">df</span>[<span class="str">'order_date'</span>], format=<span class="str">'%d-%m-%Y'</span>)</div>
+    <div class="ex">pd.<span class="fn2">to_datetime</span>(<span class="var">df</span>[<span class="str">'ts'</span>], unit=<span class="str">'s'</span>)  <span class="cm"># unix timestamp</span></div>
+    <div class="ex">pd.<span class="fn2">to_datetime</span>(<span class="var">df</span>[<span class="str">'date'</span>], errors=<span class="str">'coerce'</span>)  <span class="cm"># bad dates → NaT</span></div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">dt.strftime / dt.components</span><span class="fn-desc">Extract date parts</span></td>
+  <td><span class="fmt">df['col'].dt.year / .month / .day / .hour
+df['col'].dt.strftime('%Y-%m')
+df['col'].dt.day_name()</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>[<span class="str">'year'</span>] <span class="op">=</span> <span class="var">df</span>[<span class="str">'date'</span>].dt.year</div>
+    <div class="ex"><span class="var">df</span>[<span class="str">'month_str'</span>] <span class="op">=</span> <span class="var">df</span>[<span class="str">'date'</span>].dt.<span class="fn2">strftime</span>(<span class="str">'%Y-%m'</span>)  <span class="cm"># '2024-03'</span></div>
+    <div class="ex"><span class="var">df</span>[<span class="str">'weekday'</span>] <span class="op">=</span> <span class="var">df</span>[<span class="str">'date'</span>].dt.<span class="fn2">day_name</span>()  <span class="cm"># 'Monday'</span></div>
+    <div class="ex"><span class="var">df</span>[<span class="str">'quarter'</span>] <span class="op">=</span> <span class="var">df</span>[<span class="str">'date'</span>].dt.quarter</div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">dt.date / dt.floor / resample</span><span class="fn-desc">Truncate &amp; resample</span></td>
+  <td><span class="fmt">df['col'].dt.date  # strip time
+df['col'].dt.floor('D'|'H'|'min')
+df.resample('M', on='date')['val'].sum()</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>[<span class="str">'hour_bucket'</span>] <span class="op">=</span> <span class="var">df</span>[<span class="str">'ts'</span>].dt.<span class="fn2">floor</span>(<span class="str">'H'</span>)</div>
+    <div class="ex"><span class="var">df</span>.<span class="fn2">resample</span>(<span class="str">'M'</span>, on=<span class="str">'order_date'</span>)[<span class="str">'revenue'</span>].<span class="fn2">sum</span>().<span class="fn2">reset_index</span>()</div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">timedelta / date_range</span><span class="fn-desc">Date arithmetic</span></td>
+  <td><span class="fmt">df['col2'] - df['col1']  → Timedelta
+pd.date_range(start, end, freq='D')</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>[<span class="str">'days_open'</span>] <span class="op">=</span> (<span class="var">df</span>[<span class="str">'close_date'</span>] <span class="op">-</span> <span class="var">df</span>[<span class="str">'open_date'</span>]).dt.days</div>
+    <div class="ex">pd.<span class="fn2">date_range</span>(<span class="str">'2024-01-01'</span>, <span class="str">'2024-12-31'</span>, freq=<span class="str">'M'</span>)</div>
+  </div></td>
+</tr>
+</tbody>
+</table>
+
+<!-- PERFORMANCE -->
+<div class="section-label"><span class="tag tag-type">Performance &amp; Memory</span><span></span></div>
+<table>
+<thead><tr><th>Function</th><th>Format</th><th>Examples</th></tr></thead>
+<tbody>
+<tr>
+  <td><span class="fn">memory_usage</span><span class="fn-desc">Diagnose memory bloat</span></td>
+  <td><span class="fmt">df.memory_usage(deep=True).sum()</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>.<span class="fn2">memory_usage</span>(deep=<span class="kw">True</span>).<span class="fn2">sum</span>() <span class="op">/</span> <span class="num">1e6</span>  <span class="cm"># MB</span></div>
+    <div class="ex"><span class="cm"># reduce: cast objects → category, float64 → float32</span>
+<span class="var">df</span>[<span class="str">'status'</span>] <span class="op">=</span> <span class="var">df</span>[<span class="str">'status'</span>].<span class="fn2">astype</span>(<span class="str">'category'</span>)</div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">pipe</span><span class="fn-desc">Chain custom functions cleanly</span></td>
+  <td><span class="fmt">df.pipe(func1).pipe(func2, arg)</span></td>
+  <td><div class="ex-block">
+    <div class="ex">(<span class="var">df</span>
+  .<span class="fn2">pipe</span>(<span class="var">clean_nulls</span>)
+  .<span class="fn2">pipe</span>(<span class="var">normalize_dates</span>)
+  .<span class="fn2">pipe</span>(<span class="var">add_features</span>))</div>
+    <span class="tip">✓ preferred pattern in production pipelines</span>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">explode</span><span class="fn-desc">Unnest list columns</span></td>
+  <td><span class="fmt">df.explode('col')</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="cm"># df['tags'] has lists like ['a','b','c']</span>
+<span class="var">df</span>.<span class="fn2">explode</span>(<span class="str">'tags'</span>).<span class="fn2">reset_index</span>(drop=<span class="kw">True</span>)</div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">melt</span><span class="fn-desc">Wide → long (unpivot)</span></td>
+  <td><span class="fmt">df.melt(id_vars=[cols], value_vars=[cols], var_name, value_name)</span></td>
+  <td><div class="ex-block">
+    <div class="ex"><span class="var">df</span>.<span class="fn2">melt</span>(id_vars=[<span class="str">'id'</span>, <span class="str">'name'</span>], value_vars=[<span class="str">'q1'</span>,<span class="str">'q2'</span>,<span class="str">'q3'</span>], var_name=<span class="str">'quarter'</span>, value_name=<span class="str">'sales'</span>)</div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="fn">crosstab</span><span class="fn-desc">Frequency cross-table</span></td>
+  <td><span class="fmt">pd.crosstab(df['col1'], df['col2'], normalize=False)</span></td>
+  <td><div class="ex-block">
+    <div class="ex">pd.<span class="fn2">crosstab</span>(<span class="var">df</span>[<span class="str">'gender'</span>], <span class="var">df</span>[<span class="str">'dept'</span>], normalize=<span class="str">'index'</span>)  <span class="cm"># row %</span></div>
+  </div></td>
+</tr>
+</tbody>
+</table>
+
+<div class="footer">
+  <span>import pandas as pd &nbsp;|&nbsp; import numpy as np</span>
+  <span>⚡ vectorized ops &gt; apply &gt; iterrows (never in prod)</span>
+  <span>🔑 always reset_index() after groupby for clean columns</span>
+  <span>📌 na=False in str ops · errors='coerce' in to_datetime</span>
+</div>
+
+</body>
+</html>
